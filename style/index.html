@@ -1,0 +1,890 @@
+<!doctype html>
+<html lang="en" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UpCming</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&amp;family=Rajdhani:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+  <script>
+tailwind.config = {
+  theme: {
+    extend: {
+      fontFamily: {
+        orbitron: ['Orbitron', 'sans-serif'],
+        rajdhani: ['Rajdhani', 'sans-serif'],
+      }
+    }
+  }
+}
+</script>
+  <style>
+html, body { height: 100%; margin: 0; overflow: hidden; }
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #0a0a1a; }
+::-webkit-scrollbar-thumb { background: #00f0ff44; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #00f0ff88; }
+
+.neon-glow { text-shadow: 0 0 10px var(--accent), 0 0 40px var(--accent); }
+.neon-box { box-shadow: 0 0 15px var(--accent-dim), inset 0 0 15px rgba(0,0,0,0.3); }
+
+.glass {
+  background: rgba(10, 10, 40, 0.55);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 240, 255, 0.12);
+}
+
+.glass-card {
+  background: rgba(10, 10, 40, 0.5);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(0, 240, 255, 0.1);
+  transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.glass-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  border-color: rgba(0, 240, 255, 0.35);
+  box-shadow: 0 20px 60px rgba(0, 240, 255, 0.12), 0 0 30px rgba(0, 240, 255, 0.06);
+}
+
+.btn-neon {
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  background-size: 200% 200%;
+  animation: gradientShift 3s ease infinite;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+.btn-neon::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%; width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+  transition: left 0.5s ease;
+}
+.btn-neon:hover::before { left: 100%; }
+.btn-neon:hover {
+  box-shadow: 0 0 25px var(--accent-dim), 0 0 50px rgba(0, 240, 255, 0.15);
+  transform: translateY(-2px);
+}
+
+.btn-outline {
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  transition: all 0.3s ease;
+}
+.btn-outline:hover {
+  background: rgba(0, 240, 255, 0.1);
+  box-shadow: 0 0 20px var(--accent-dim);
+}
+
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-12px); }
+}
+
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scanline {
+  0% { top: -10%; }
+  100% { top: 110%; }
+}
+
+.animate-float { animation: float 4s ease-in-out infinite; }
+.animate-fade-up { animation: fadeSlideUp 0.6s ease forwards; }
+
+.stagger-1 { animation-delay: 0.1s; opacity: 0; }
+.stagger-2 { animation-delay: 0.2s; opacity: 0; }
+.stagger-3 { animation-delay: 0.3s; opacity: 0; }
+.stagger-4 { animation-delay: 0.4s; opacity: 0; }
+.stagger-5 { animation-delay: 0.5s; opacity: 0; }
+.stagger-6 { animation-delay: 0.6s; opacity: 0; }
+
+.product-img {
+  position: relative;
+  overflow: hidden;
+}
+.product-img::after {
+  content: '';
+  position: absolute;
+  top: -10%;
+  left: 0;
+  width: 100%;
+  height: 6px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  opacity: 0.3;
+  animation: scanline 3s linear infinite;
+}
+
+.grid-line {
+  background-image:
+    linear-gradient(rgba(0,240,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,240,255,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+.qty-btn {
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid rgba(0,240,255,0.2);
+  color: var(--accent);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: transparent;
+  font-size: 16px;
+}
+.qty-btn:hover {
+  background: rgba(0,240,255,0.1);
+  border-color: var(--accent);
+}
+
+.toast {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  z-index: 9999;
+  padding: 14px 24px;
+  border-radius: 12px;
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  transform: translateY(100px);
+  opacity: 0;
+  transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.toast.show {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+:root {
+  --bg: #060611;
+  --surface: #0d0d2b;
+  --text: #e0e8ff;
+  --accent: #00f0ff;
+  --accent2: #8b5cf6;
+  --accent-dim: rgba(0, 240, 255, 0.25);
+}
+
+#three-canvas {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 0;
+}
+</style>
+  <style>body { box-sizing: border-box; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full" style="background: var(--bg); color: var(--text); font-family: 'Rajdhani', sans-serif;">
+  <div id="app" class="h-full w-full flex flex-col overflow-auto grid-line"><!-- NAVBAR -->
+   <header class="glass sticky top-0 z-50 w-full">
+    <nav class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between"><a href="#" onclick="navigate('home'); return false;" class="flex items-center gap-2 group">
+      <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background: linear-gradient(135deg, var(--accent), var(--accent2));"><i data-lucide="hexagon" style="width:20px;height:20px;color:#060611;"></i>
+      </div><span id="nav-store-name" class="font-orbitron font-bold text-lg tracking-wider" style="color:var(--accent);">UpCming</span> </a>
+     <div class="hidden md:flex items-center gap-8 font-rajdhani font-semibold text-sm tracking-widest uppercase"><a href="#" onclick="navigate('home'); return false;" class="nav-link transition-colors hover:text-cyan-300" style="color:var(--text);">Home</a> <a href="#" onclick="navigate('products'); return false;" class="nav-link transition-colors hover:text-cyan-300" style="color:var(--text);">Products</a>
+     </div>
+     <div class="flex items-center gap-4"><button onclick="navigate('cart')" class="relative p-2 rounded-lg transition-colors hover:bg-white/5" aria-label="Cart"> <i data-lucide="shopping-cart" style="width:22px;height:22px;color:var(--accent);"></i> <span id="cart-badge" class="absolute -top-1 -right-1 w-5 h-5 rounded-full text-xs font-bold flex items-center justify-center" style="background:var(--accent2);color:#fff;display:none;">0</span> </button> <button id="auth-btn" onclick="navigate('login')" class="hidden md:flex items-center gap-2 btn-outline text-xs font-orbitron font-bold px-4 py-2 rounded-lg"> <i data-lucide="log-in" style="width:14px;height:14px;"></i> SIGN IN </button> <button class="md:hidden p-2" onclick="toggleMobile()" aria-label="Menu"> <i data-lucide="menu" style="width:24px;height:24px;color:var(--accent);"></i> </button>
+     </div>
+    </nav><!-- Mobile menu -->
+    <div id="mobile-menu" class="hidden md:hidden px-6 pb-4"><a href="#" onclick="navigate('home'); toggleMobile(); return false;" class="block py-2 font-semibold tracking-wider" style="color:var(--text);">Home</a> <a href="#" onclick="navigate('products'); toggleMobile(); return false;" class="block py-2 font-semibold tracking-wider" style="color:var(--text);">Products</a> <a href="#" onclick="navigate('cart'); toggleMobile(); return false;" class="block py-2 font-semibold tracking-wider" style="color:var(--text);">Cart</a>
+    </div>
+   </header><!-- PAGES -->
+   <main id="page-container" class="flex-1 w-full"><!-- HOME PAGE -->
+    <section id="page-home" class="page"><!-- Hero -->
+     <div class="relative w-full overflow-hidden" style="height: 70%;">
+      <canvas id="three-canvas"></canvas>
+      <div class="absolute inset-0 z-10 flex flex-col items-center justify-center text-center px-4">
+       <p class="font-rajdhani font-semibold text-sm tracking-[0.3em] uppercase mb-4 animate-fade-up stagger-1" style="color:var(--accent);">⟡ Next Generation Shopping ⟡</p>
+       <h1 id="hero-heading" class="font-orbitron font-black text-4xl sm:text-5xl md:text-7xl leading-tight neon-glow animate-fade-up stagger-2" style="color:#fff;">THE FUTURE<br>
+         IS NOW</h1>
+       <p id="hero-subtext" class="mt-4 text-lg sm:text-xl max-w-xl animate-fade-up stagger-3" style="color:rgba(224,232,255,0.6);">Experience next-gen products crafted with quantum precision and neon aesthetics.</p>
+       <div class="flex gap-4 mt-8 animate-fade-up stagger-4"><button onclick="navigate('products')" class="btn-neon font-orbitron font-bold text-sm tracking-wider px-8 py-3 rounded-xl" style="color:#060611;">EXPLORE</button> <button onclick="navigate('products')" class="btn-outline font-orbitron font-bold text-sm tracking-wider px-8 py-3 rounded-xl">SHOP NOW</button>
+       </div>
+      </div>
+      <div class="absolute bottom-0 left-0 right-0 h-32 z-10" style="background: linear-gradient(to top, var(--bg), transparent);"></div>
+     </div><!-- Featured Products -->
+     <div class="max-w-7xl mx-auto px-4 sm:px-6 py-16">
+      <div class="flex items-center justify-between mb-10">
+       <div>
+        <p class="font-rajdhani font-semibold text-sm tracking-[0.25em] uppercase" style="color:var(--accent);">Featured</p>
+        <h2 class="font-orbitron font-bold text-2xl sm:text-3xl mt-1" style="color:#fff;">Top Picks</h2>
+       </div><button onclick="navigate('products')" class="btn-outline text-sm font-semibold px-5 py-2 rounded-lg tracking-wider">VIEW ALL</button>
+      </div>
+      <div id="featured-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+     </div><!-- Stats -->
+     <div class="max-w-7xl mx-auto px-4 sm:px-6 pb-20">
+      <div class="glass rounded-2xl p-8 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+       <div>
+        <p class="font-orbitron font-black text-3xl neon-glow" style="color:var(--accent);">2.4K+</p>
+        <p class="text-sm mt-1" style="color:rgba(224,232,255,0.5);">Products</p>
+       </div>
+       <div>
+        <p class="font-orbitron font-black text-3xl" style="color:var(--accent2);">98%</p>
+        <p class="text-sm mt-1" style="color:rgba(224,232,255,0.5);">Satisfaction</p>
+       </div>
+       <div>
+        <p class="font-orbitron font-black text-3xl neon-glow" style="color:var(--accent);">150+</p>
+        <p class="text-sm mt-1" style="color:rgba(224,232,255,0.5);">Countries</p>
+       </div>
+       <div>
+        <p class="font-orbitron font-black text-3xl" style="color:var(--accent2);">24/7</p>
+        <p class="text-sm mt-1" style="color:rgba(224,232,255,0.5);">Support</p>
+       </div>
+      </div>
+     </div>
+    </section><!-- PRODUCTS PAGE -->
+    <section id="page-products" class="page hidden">
+     <div class="max-w-7xl mx-auto px-4 sm:px-6 py-10">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-10">
+       <div>
+        <p class="font-rajdhani font-semibold text-sm tracking-[0.25em] uppercase" style="color:var(--accent);">Collection</p>
+        <h2 class="font-orbitron font-bold text-2xl sm:text-3xl mt-1" style="color:#fff;">All Products</h2>
+       </div>
+       <div class="flex gap-2 flex-wrap"><button onclick="filterProducts('all')" class="filter-btn active btn-neon text-xs font-orbitron font-bold px-4 py-2 rounded-lg" style="color:#060611;" data-cat="all">ALL</button> <button onclick="filterProducts('graphic')" class="filter-btn btn-outline text-xs font-orbitron font-bold px-4 py-2 rounded-lg" data-cat="graphic">GRAPHIC</button> <button onclick="filterProducts('minimal')" class="filter-btn btn-outline text-xs font-orbitron font-bold px-4 py-2 rounded-lg" data-cat="minimal">MINIMAL</button> <button onclick="filterProducts('limited')" class="filter-btn btn-outline text-xs font-orbitron font-bold px-4 py-2 rounded-lg" data-cat="limited">LIMITED</button>
+       </div>
+      </div>
+      <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+     </div>
+    </section><!-- PRODUCT DETAIL PAGE -->
+    <section id="page-detail" class="page hidden">
+     <div class="max-w-6xl mx-auto px-4 sm:px-6 py-10"><button onclick="history.back ? navigate('products') : navigate('products')" class="flex items-center gap-2 text-sm font-semibold mb-8 transition-colors hover:text-cyan-300" style="color:var(--accent);"> <i data-lucide="arrow-left" style="width:16px;height:16px;"></i> Back to Products </button>
+      <div id="detail-content" class="grid grid-cols-1 lg:grid-cols-2 gap-10"></div>
+     </div>
+    </section><!-- LOGIN PAGE -->
+    <section id="page-login" class="page hidden">
+     <div class="min-h-screen flex items-center justify-center px-4">
+      <div class="w-full max-w-md">
+       <div class="glass-card rounded-2xl p-8">
+        <div class="flex justify-center mb-6">
+         <div class="w-12 h-12 rounded-lg flex items-center justify-center" style="background: linear-gradient(135deg, var(--accent), var(--accent2));"><i data-lucide="hexagon" style="width:24px;height:24px;color:#060611;"></i>
+         </div>
+        </div>
+        <h2 class="font-orbitron font-black text-2xl text-center neon-glow" style="color:var(--accent);">SIGN IN</h2>
+        <p class="text-center text-sm mt-2" style="color:rgba(224,232,255,0.5);">Enter UPCMING</p>
+        <form id="login-form" onsubmit="handleLogin(event)" class="mt-8 space-y-4">
+         <div><label class="block text-xs font-orbitron font-bold tracking-wider mb-2" style="color:var(--accent);">EMAIL</label> <input type="email" required class="w-full rounded-lg px-4 py-3 text-sm font-rajdhani outline-none transition-all focus:ring-2" style="background:rgba(0,240,255,0.05);border:1px solid rgba(0,240,255,0.15);color:#fff;--tw-ring-color:var(--accent);" placeholder="your@email.com">
+         </div>
+         <div><label class="block text-xs font-orbitron font-bold tracking-wider mb-2" style="color:var(--accent);">PASSWORD</label> <input type="password" required class="w-full rounded-lg px-4 py-3 text-sm font-rajdhani outline-none transition-all focus:ring-2" style="background:rgba(0,240,255,0.05);border:1px solid rgba(0,240,255,0.15);color:#fff;--tw-ring-color:var(--accent);" placeholder="••••••••">
+         </div><button type="submit" class="btn-neon font-orbitron font-bold text-sm tracking-wider w-full py-3 rounded-lg mt-6 flex items-center justify-center gap-2" style="color:#060611;"> <i data-lucide="log-in" style="width:16px;height:16px;"></i> SIGN IN </button>
+        </form>
+        <div class="text-center mt-6">
+         <p class="text-sm" style="color:rgba(224,232,255,0.5);">No account yet? <button onclick="navigate('register')" class="font-bold transition-colors hover:text-cyan-300" style="color:var(--accent);background:none;border:none;cursor:pointer;">Create one</button></p>
+        </div>
+       </div>
+      </div>
+     </div>
+    </section><!-- REGISTER PAGE -->
+    <section id="page-register" class="page hidden">
+     <div class="min-h-screen flex items-center justify-center px-4">
+      <div class="w-full max-w-md">
+       <div class="glass-card rounded-2xl p-8">
+        <div class="flex justify-center mb-6">
+         <div class="w-12 h-12 rounded-lg flex items-center justify-center" style="background: linear-gradient(135deg, var(--accent), var(--accent2));"><i data-lucide="user-plus" style="width:24px;height:24px;color:#060611;"></i>
+         </div>
+        </div>
+        <h2 class="font-orbitron font-black text-2xl text-center neon-glow" style="color:var(--accent);">JOIN UPCMING</h2>
+        <p class="text-center text-sm mt-2" style="color:rgba(224,232,255,0.5);">Create your account</p>
+        <form id="register-form" onsubmit="handleRegister(event)" class="mt-8 space-y-4">
+         <div><label class="block text-xs font-orbitron font-bold tracking-wider mb-2" style="color:var(--accent);">FULL NAME</label> <input type="text" required class="w-full rounded-lg px-4 py-3 text-sm font-rajdhani outline-none transition-all focus:ring-2" style="background:rgba(0,240,255,0.05);border:1px solid rgba(0,240,255,0.15);color:#fff;--tw-ring-color:var(--accent);" placeholder="Jane Doe">
+         </div>
+         <div><label class="block text-xs font-orbitron font-bold tracking-wider mb-2" style="color:var(--accent);">EMAIL</label> <input type="email" required class="w-full rounded-lg px-4 py-3 text-sm font-rajdhani outline-none transition-all focus:ring-2" style="background:rgba(0,240,255,0.05);border:1px solid rgba(0,240,255,0.15);color:#fff;--tw-ring-color:var(--accent);" placeholder="your@email.com">
+         </div>
+         <div><label class="block text-xs font-orbitron font-bold tracking-wider mb-2" style="color:var(--accent);">PASSWORD</label> <input type="password" required minlength="8" class="w-full rounded-lg px-4 py-3 text-sm font-rajdhani outline-none transition-all focus:ring-2" style="background:rgba(0,240,255,0.05);border:1px solid rgba(0,240,255,0.15);color:#fff;--tw-ring-color:var(--accent);" placeholder="Minimum 8 characters">
+         </div>
+         <div><label class="block text-xs font-orbitron font-bold tracking-wider mb-2" style="color:var(--accent);">CONFIRM PASSWORD</label> <input type="password" required minlength="8" class="w-full rounded-lg px-4 py-3 text-sm font-rajdhani outline-none transition-all focus:ring-2" style="background:rgba(0,240,255,0.05);border:1px solid rgba(0,240,255,0.15);color:#fff;--tw-ring-color:var(--accent);" placeholder="Confirm your password">
+         </div><button type="submit" class="btn-neon font-orbitron font-bold text-sm tracking-wider w-full py-3 rounded-lg mt-6 flex items-center justify-center gap-2" style="color:#060611;"> <i data-lucide="user-plus" style="width:16px;height:16px;"></i> CREATE ACCOUNT </button>
+        </form>
+        <div class="text-center mt-6">
+         <p class="text-sm" style="color:rgba(224,232,255,0.5);">Already have an account? <button onclick="navigate('login')" class="font-bold transition-colors hover:text-cyan-300" style="color:var(--accent);background:none;border:none;cursor:pointer;">Sign in</button></p>
+        </div>
+       </div>
+      </div>
+     </div>
+    </section><!-- CART PAGE -->
+    <section id="page-cart" class="page hidden">
+     <div class="max-w-4xl mx-auto px-4 sm:px-6 py-10">
+      <div class="flex items-center justify-between mb-10">
+       <div>
+        <p class="font-rajdhani font-semibold text-sm tracking-[0.25em] uppercase" style="color:var(--accent);">Your Cart</p>
+        <h2 class="font-orbitron font-bold text-2xl sm:text-3xl mt-1" style="color:#fff;">Shopping Cart</h2>
+       </div>
+      </div>
+      <div id="cart-content"></div>
+     </div>
+    </section><!-- CHECKOUT PAGE -->
+    <section id="page-checkout" class="page hidden">
+     <div class="max-w-3xl mx-auto px-4 sm:px-6 py-10"><button onclick="navigate('cart')" class="flex items-center gap-2 text-sm font-semibold mb-8 transition-colors hover:text-cyan-300" style="color:var(--accent);"> <i data-lucide="arrow-left" style="width:16px;height:16px;"></i> Back to Cart </button>
+      <div class="text-center mb-8">
+       <p class="font-rajdhani font-semibold text-sm tracking-[0.25em] uppercase" style="color:var(--accent);">⟡ DEMO ONLY ⟡</p>
+       <h2 class="font-orbitron font-bold text-2xl sm:text-3xl mt-2" style="color:#fff;">Checkout</h2>
+       <p class="text-sm mt-2" style="color:rgba(224,232,255,0.5);">This is a sample checkout — no real transactions occur.</p>
+      </div>
+      <div id="checkout-content"></div>
+     </div>
+    </section>
+   </main><!-- FOOTER -->
+   <footer class="glass w-full mt-auto">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+     <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-2">
+       <div class="w-7 h-7 rounded-md flex items-center justify-center" style="background: linear-gradient(135deg, var(--accent), var(--accent2));"><i data-lucide="hexagon" style="width:14px;height:14px;color:#060611;"></i>
+       </div><span id="footer-store-name" class="font-orbitron font-bold text-sm tracking-wider" style="color:var(--accent);">UpCming</span>
+      </div>
+      <p class="text-xs" style="color:rgba(224,232,255,0.35);">© 2026 UpCming. Designed for the future.</p>
+     </div>
+    </div>
+   </footer>
+  </div><!-- TOAST -->
+  <div id="toast" class="toast glass" style="color:var(--accent);"></div>
+  <script>
+// ============ AUTH STATE ============
+let currentUser = null;
+
+function handleLogin(e) {
+  e.preventDefault();
+  const form = e.target;
+  const email = form.querySelector('input[type="email"]').value;
+  const password = form.querySelector('input[type="password"]').value;
+  
+  // Simple validation - in production this would call a backend
+  if (email && password) {
+    currentUser = { email, name: email.split('@')[0] };
+    updateAuthUI();
+    showToast('Welcome back! 🌟');
+    navigate('home');
+  }
+  form.reset();
+}
+
+function handleRegister(e) {
+  e.preventDefault();
+  const form = e.target;
+  const inputs = form.querySelectorAll('input');
+  const name = inputs[0].value;
+  const email = inputs[1].value;
+  const pwd = inputs[2].value;
+  const confirmPwd = inputs[3].value;
+  
+  if (pwd !== confirmPwd) {
+    showToast('Passwords do not match!');
+    return;
+  }
+  
+  if (pwd.length < 8) {
+    showToast('Password must be at least 8 characters!');
+    return;
+  }
+  
+  currentUser = { email, name };
+  updateAuthUI();
+  showToast('Account created! Welcome to UPCMING! 🚀');
+  navigate('home');
+  form.reset();
+}
+
+function logout() {
+  currentUser = null;
+  updateAuthUI();
+  showToast('Signed out successfully');
+  navigate('home');
+}
+
+function updateAuthUI() {
+  const authBtn = document.getElementById('auth-btn');
+  if (currentUser) {
+    authBtn.onclick = logout;
+    authBtn.innerHTML = `<i data-lucide="log-out" style="width:14px;height:14px;"></i> ${currentUser.name.toUpperCase().substring(0, 8)}`;
+    authBtn.classList.remove('btn-outline');
+    authBtn.classList.add('btn-neon');
+    authBtn.style.color = '#060611';
+  } else {
+    authBtn.onclick = () => navigate('login');
+    authBtn.innerHTML = `<i data-lucide="log-in" style="width:14px;height:14px;"></i> SIGN IN`;
+    authBtn.classList.remove('btn-neon');
+    authBtn.classList.add('btn-outline');
+    authBtn.style.color = 'var(--accent)';
+  }
+  lucide.createIcons();
+}
+
+// ============ DATA ============
+const products = [
+  { id: 1, name: "Cyber Void Tee", price: 49, cat: "graphic", color: "#00f0ff", desc: "Bold geometric design with metallic print. 100% premium cotton blend.", specs: ["100% Cotton Blend", "Metallic Print", "Oversized Fit", "Unisex"], rating: 4.9 },
+  { id: 2, name: "Neon Grid Tee", price: 52, cat: "graphic", color: "#8b5cf6", desc: "Futuristic grid pattern with glow-in-the-dark ink. Limited edition.", specs: ["Glow-in-Dark", "Limited Print", "Premium Fabric", "UV Reactive"], rating: 4.7 },
+  { id: 3, name: "Digital Decay Shirt", price: 55, cat: "minimal", color: "#f43f5e", desc: "Minimalist abstract design. Sustainable organic cotton.", specs: ["Organic Cotton", "Abstract Print", "Eco-Friendly", "Minimal Aesthetic"], rating: 4.8 },
+  { id: 4, name: "Neon Wave Tee", price: 50, cat: "graphic", color: "#10b981", desc: "Wave pattern with vibrant neon ink. Streetwear collection.", specs: ["High-Quality Print", "Wave Design", "Streetwear Style", "Breathable"], rating: 4.9 },
+  { id: 5, name: "Minimalist Line Tee", price: 48, cat: "minimal", color: "#f59e0b", desc: "Single-line geometric design. Contemporary art meets fashion.", specs: ["Single Line Design", "Art Inspired", "Sleek Minimal", "Classic Fit"], rating: 4.5 },
+  { id: 6, name: "Tech Grid Shirt", price: 54, cat: "graphic", color: "#06b6d4", desc: "3D grid illusion print with holographic effects.", specs: ["3D Holographic", "Tech Design", "Premium Print", "Oversized"], rating: 4.3 },
+  { id: 7, name: "Void Artist Series", price: 65, cat: "limited", color: "#a855f7", desc: "Exclusive collaboration with digital artists. Ultra premium.", specs: ["Artist Collab", "Limited Run", "Premium Cotton", "Numbered Edition"], rating: 5.0 },
+  { id: 8, name: "Cyber Landscape Tee", price: 58, cat: "graphic", color: "#ef4444", desc: "Dystopian landscape design. Statement piece collection.", specs: ["Statement Print", "Landscape Art", "Bold Design", "Heavyweight Tee"], rating: 4.6 },
+];
+
+let cart = [];
+let currentPage = 'home';
+let currentFilter = 'all';
+
+// ============ NAVIGATION ============
+function navigate(page, data) {
+  document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+  const el = document.getElementById('page-' + page);
+  if (el) {
+    el.classList.remove('hidden');
+    el.style.animation = 'none';
+    el.offsetHeight;
+    el.style.animation = '';
+  }
+  currentPage = page;
+
+  if (page === 'home') renderFeatured();
+  if (page === 'products') renderProducts();
+  if (page === 'detail') renderDetail(data);
+  if (page === 'cart') renderCart();
+  if (page === 'checkout') renderCheckout();
+
+  document.getElementById('app').scrollTop = 0;
+  lucide.createIcons();
+}
+
+function toggleMobile() {
+  document.getElementById('mobile-menu').classList.toggle('hidden');
+}
+
+// ============ PRODUCT SVG ICONS ============
+function productSVG(product, size = 120) {
+  const c = product.color;
+  const cat = product.cat;
+  // T-shirt designs
+  if (cat === 'graphic' && product.name.includes('Void')) {
+    return `<svg width="${size}" height="${size}" viewBox="0 0 120 120" fill="none"><path d="M35 25 L65 15 L95 25 L90 85 Q90 105 70 105 L50 105 Q30 105 30 85 Z" stroke="${c}" stroke-width="3" fill="${c}" opacity="0.15"/><circle cx="50" cy="45" r="8" stroke="${c}" stroke-width="2" fill="none"/><circle cx="70" cy="45" r="8" stroke="${c}" stroke-width="2" fill="none"/><line x1="45" y1="60" x2="75" y2="60" stroke="${c}" stroke-width="2"/><line x1="55" y1="70" x2="65" y2="70" stroke="${c}" stroke-width="1.5" opacity="0.5"/></svg>`;
+  } else if (cat === 'graphic' && product.name.includes('Grid')) {
+    return `<svg width="${size}" height="${size}" viewBox="0 0 120 120" fill="none"><path d="M35 25 L65 15 L95 25 L90 85 Q90 105 70 105 L50 105 Q30 105 30 85 Z" stroke="${c}" stroke-width="3" fill="${c}" opacity="0.12"/><g opacity="0.6"><line x1="45" y1="35" x2="75" y2="35" stroke="${c}" stroke-width="1"/><line x1="45" y1="45" x2="75" y2="45" stroke="${c}" stroke-width="1"/><line x1="45" y1="55" x2="75" y2="55" stroke="${c}" stroke-width="1"/><line x1="55" y1="25" x2="55" y2="75" stroke="${c}" stroke-width="1"/><line x1="65" y1="25" x2="65" y2="75" stroke="${c}" stroke-width="1"/></g></svg>`;
+  } else if (cat === 'minimal') {
+    return `<svg width="${size}" height="${size}" viewBox="0 0 120 120" fill="none"><path d="M35 25 L65 15 L95 25 L90 85 Q90 105 70 105 L50 105 Q30 105 30 85 Z" stroke="${c}" stroke-width="3" fill="${c}" opacity="0.12"/><path d="M45 40 Q60 55 75 40" stroke="${c}" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>`;
+  } else if (cat === 'limited') {
+    return `<svg width="${size}" height="${size}" viewBox="0 0 120 120" fill="none"><path d="M35 25 L65 15 L95 25 L90 85 Q90 105 70 105 L50 105 Q30 105 30 85 Z" stroke="${c}" stroke-width="3" fill="${c}" opacity="0.15"/><circle cx="60" cy="50" r="12" stroke="${c}" stroke-width="2" fill="none"/><circle cx="60" cy="50" r="3" fill="${c}"/><path d="M52 50 L68 50 M60 42 L60 58" stroke="${c}" stroke-width="1.5" stroke-linecap="round"/><text x="60" y="75" font-family="monospace" font-size="8" text-anchor="middle" fill="${c}" opacity="0.6">LIMITED</text></svg>`;
+  } else {
+    return `<svg width="${size}" height="${size}" viewBox="0 0 120 120" fill="none"><path d="M35 25 L65 15 L95 25 L90 85 Q90 105 70 105 L50 105 Q30 105 30 85 Z" stroke="${c}" stroke-width="3" fill="${c}" opacity="0.15"/><circle cx="50" cy="50" r="6" fill="${c}" opacity="0.7"/><circle cx="70" cy="50" r="6" fill="${c}" opacity="0.7"/><path d="M55 65 Q60 70 65 65" stroke="${c}" stroke-width="2" fill="none" stroke-linecap="round"/></svg>`;
+  }
+}
+
+// ============ RENDER FUNCTIONS ============
+
+function productCard(p, idx) {
+  const stars = '★'.repeat(Math.floor(p.rating)) + (p.rating % 1 >= 0.5 ? '½' : '');
+  return `
+    <div class="glass-card rounded-2xl overflow-hidden cursor-pointer animate-fade-up stagger-${(idx % 6) + 1}" onclick="navigate('detail', ${p.id})">
+      <div class="product-img relative flex items-center justify-center py-8" style="background: radial-gradient(circle at 50% 50%, ${p.color}11, transparent 70%);">
+        <div class="animate-float">${productSVG(p, 110)}</div>
+      </div>
+      <div class="p-5">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-[10px] font-orbitron font-bold tracking-widest uppercase px-2 py-1 rounded-md" style="background:${p.color}18;color:${p.color};">${p.cat}</span>
+          <span class="text-xs" style="color:${p.color};">${stars} ${p.rating}</span>
+        </div>
+        <h3 class="font-orbitron font-bold text-base" style="color:#fff;">${p.name}</h3>
+        <p class="text-xs mt-1 line-clamp-2" style="color:rgba(224,232,255,0.45);">${p.desc}</p>
+        <div class="flex items-center justify-between mt-4">
+          <span class="font-orbitron font-black text-xl" style="color:var(--accent);">$${p.price}</span>
+          <button onclick="event.stopPropagation(); addToCart(${p.id})" class="btn-neon text-xs font-orbitron font-bold px-4 py-2 rounded-lg flex items-center gap-1" style="color:#060611;">
+            <i data-lucide="plus" style="width:14px;height:14px;"></i> ADD
+          </button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderFeatured() {
+  const featured = products.slice(0, 3);
+  document.getElementById('featured-grid').innerHTML = featured.map((p, i) => productCard(p, i)).join('');
+  lucide.createIcons();
+}
+
+function renderProducts() {
+  const filtered = currentFilter === 'all' ? products : products.filter(p => p.cat === currentFilter);
+  document.getElementById('products-grid').innerHTML = filtered.map((p, i) => productCard(p, i)).join('');
+  // Update filter buttons
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    if (btn.dataset.cat === currentFilter) {
+      btn.className = 'filter-btn btn-neon text-xs font-orbitron font-bold px-4 py-2 rounded-lg';
+      btn.style.color = '#060611';
+    } else {
+      btn.className = 'filter-btn btn-outline text-xs font-orbitron font-bold px-4 py-2 rounded-lg';
+      btn.style.color = 'var(--accent)';
+    }
+  });
+  lucide.createIcons();
+}
+
+function filterProducts(cat) {
+  currentFilter = cat;
+  renderProducts();
+}
+
+function renderDetail(id) {
+  const p = products.find(x => x.id === id);
+  if (!p) return;
+  const stars = '★'.repeat(Math.floor(p.rating)) + (p.rating % 1 >= 0.5 ? '½' : '');
+  document.getElementById('detail-content').innerHTML = `
+    <div class="glass-card rounded-2xl overflow-hidden">
+      <div class="product-img flex items-center justify-center py-16" style="background: radial-gradient(circle at 50% 50%, ${p.color}15, transparent 70%);">
+        <div class="animate-float">${productSVG(p, 180)}</div>
+      </div>
+    </div>
+    <div class="flex flex-col justify-center">
+      <span class="text-[11px] font-orbitron font-bold tracking-widest uppercase px-3 py-1 rounded-lg inline-block w-fit" style="background:${p.color}18;color:${p.color};">${p.cat}</span>
+      <h1 class="font-orbitron font-black text-3xl sm:text-4xl mt-4" style="color:#fff;">${p.name}</h1>
+      <div class="flex items-center gap-3 mt-3">
+        <span style="color:${p.color};">${stars}</span>
+        <span class="text-sm" style="color:rgba(224,232,255,0.5);">${p.rating} / 5.0</span>
+      </div>
+      <p class="text-base mt-5 leading-relaxed" style="color:rgba(224,232,255,0.6);">${p.desc}</p>
+      <div class="grid grid-cols-2 gap-3 mt-6">
+        ${p.specs.map(s => `<div class="glass rounded-xl px-4 py-3 text-sm flex items-center gap-2"><i data-lucide="check-circle" style="width:14px;height:14px;color:${p.color};flex-shrink:0;"></i><span style="color:rgba(224,232,255,0.7);">${s}</span></div>`).join('')}
+      </div>
+      <div class="mt-8 flex items-center gap-6">
+        <span class="font-orbitron font-black text-4xl" style="color:var(--accent);">$${p.price}</span>
+        <button onclick="addToCart(${p.id})" class="btn-neon font-orbitron font-bold text-sm tracking-wider px-8 py-3 rounded-xl flex items-center gap-2" style="color:#060611;">
+          <i data-lucide="shopping-cart" style="width:18px;height:18px;"></i> ADD TO CART
+        </button>
+      </div>
+    </div>`;
+  lucide.createIcons();
+}
+
+function renderCart() {
+  const el = document.getElementById('cart-content');
+  if (cart.length === 0) {
+    el.innerHTML = `
+      <div class="glass-card rounded-2xl p-12 text-center">
+        <div class="flex justify-center mb-4"><i data-lucide="shopping-cart" style="width:48px;height:48px;color:rgba(224,232,255,0.2);"></i></div>
+        <p class="font-orbitron font-bold text-lg" style="color:rgba(224,232,255,0.4);">Your cart is empty</p>
+        <button onclick="navigate('products')" class="btn-neon font-orbitron font-bold text-sm px-6 py-2 rounded-lg mt-6" style="color:#060611;">BROWSE PRODUCTS</button>
+      </div>`;
+    lucide.createIcons();
+    return;
+  }
+  const total = cart.reduce((s, c) => s + c.product.price * c.qty, 0);
+  el.innerHTML = `
+    <div class="space-y-4">
+      ${cart.map((item, i) => `
+        <div class="glass-card rounded-xl p-4 flex items-center gap-4" data-cart-idx="${i}">
+          <div class="w-16 h-16 rounded-lg flex items-center justify-center flex-shrink-0" style="background: radial-gradient(circle, ${item.product.color}15, transparent 70%);">
+            ${productSVG(item.product, 50)}
+          </div>
+          <div class="flex-1 min-w-0">
+            <h4 class="font-orbitron font-bold text-sm truncate" style="color:#fff;">${item.product.name}</h4>
+            <p class="text-xs" style="color:rgba(224,232,255,0.4);">$${item.product.price} each</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button class="qty-btn" onclick="updateQty(${i}, -1)">−</button>
+            <span class="font-orbitron font-bold text-sm w-8 text-center">${item.qty}</span>
+            <button class="qty-btn" onclick="updateQty(${i}, 1)">+</button>
+          </div>
+          <span class="font-orbitron font-bold text-base w-20 text-right" style="color:var(--accent);">$${item.product.price * item.qty}</span>
+          <button onclick="removeFromCart(${i})" class="p-2 rounded-lg transition-colors hover:bg-red-500/10" aria-label="Remove item">
+            <i data-lucide="trash-2" style="width:16px;height:16px;color:#f43f5e;"></i>
+          </button>
+        </div>
+      `).join('')}
+    </div>
+    <div class="glass-card rounded-xl p-6 mt-6">
+      <div class="flex justify-between items-center mb-4">
+        <span class="font-rajdhani font-semibold" style="color:rgba(224,232,255,0.5);">Subtotal</span>
+        <span class="font-orbitron font-bold text-lg" style="color:#fff;">$${total}</span>
+      </div>
+      <div class="flex justify-between items-center mb-4">
+        <span class="font-rajdhani font-semibold" style="color:rgba(224,232,255,0.5);">Shipping</span>
+        <span class="font-orbitron font-bold" style="color:var(--accent);">FREE</span>
+      </div>
+      <div class="border-t pt-4" style="border-color:rgba(0,240,255,0.1);">
+        <div class="flex justify-between items-center">
+          <span class="font-orbitron font-bold text-lg" style="color:#fff;">Total</span>
+          <span class="font-orbitron font-black text-2xl neon-glow" style="color:var(--accent);">$${total}</span>
+        </div>
+      </div>
+      <button onclick="navigate('checkout')" class="btn-neon font-orbitron font-bold text-sm tracking-wider w-full py-3 rounded-xl mt-6 flex items-center justify-center gap-2" style="color:#060611;">
+        <i data-lucide="credit-card" style="width:18px;height:18px;"></i> CHECKOUT
+      </button>
+    </div>`;
+  lucide.createIcons();
+}
+
+function renderCheckout() {
+  const total = cart.reduce((s, c) => s + c.product.price * c.qty, 0);
+  const el = document.getElementById('checkout-content');
+  if (cart.length === 0) {
+    el.innerHTML = `<div class="glass-card rounded-2xl p-12 text-center">
+      <p class="font-orbitron font-bold" style="color:rgba(224,232,255,0.4);">Nothing to checkout.</p>
+      <button onclick="navigate('products')" class="btn-neon font-orbitron font-bold text-sm px-6 py-2 rounded-lg mt-4" style="color:#060611;">BROWSE</button>
+    </div>`;
+    lucide.createIcons();
+    return;
+  }
+  el.innerHTML = `
+    <form onsubmit="handleCheckout(event)" class="space-y-6">
+      <div class="glass-card rounded-xl p-6">
+        <label class="block mb-1 text-xs font-orbitron font-bold tracking-wider" style="color:var(--accent);" for="co-name">FULL NAME</label>
+        <input id="co-name" type="text" required class="w-full rounded-lg px-4 py-3 text-sm font-rajdhani outline-none transition-all focus:ring-2" style="background:rgba(0,240,255,0.05);border:1px solid rgba(0,240,255,0.15);color:#fff;--tw-ring-color:var(--accent);" placeholder="Jane Doe">
+        <label class="block mt-4 mb-1 text-xs font-orbitron font-bold tracking-wider" style="color:var(--accent);" for="co-email">EMAIL</label>
+        <input id="co-email" type="email" required class="w-full rounded-lg px-4 py-3 text-sm font-rajdhani outline-none transition-all focus:ring-2" style="background:rgba(0,240,255,0.05);border:1px solid rgba(0,240,255,0.15);color:#fff;--tw-ring-color:var(--accent);" placeholder="jane@example.com">
+        <label class="block mt-4 mb-1 text-xs font-orbitron font-bold tracking-wider" style="color:var(--accent);" for="co-address">ADDRESS</label>
+        <input id="co-address" type="text" required class="w-full rounded-lg px-4 py-3 text-sm font-rajdhani outline-none transition-all focus:ring-2" style="background:rgba(0,240,255,0.05);border:1px solid rgba(0,240,255,0.15);color:#fff;--tw-ring-color:var(--accent);" placeholder="123 Neon Blvd, Cyber City">
+      </div>
+      <div class="glass-card rounded-xl p-6">
+        <p class="text-xs font-orbitron font-bold tracking-wider mb-3" style="color:var(--accent);">ORDER SUMMARY</p>
+        ${cart.map(c => `<div class="flex justify-between text-sm py-1"><span style="color:rgba(224,232,255,0.6);">${c.product.name} × ${c.qty}</span><span style="color:#fff;">$${c.product.price * c.qty}</span></div>`).join('')}
+        <div class="border-t mt-3 pt-3 flex justify-between" style="border-color:rgba(0,240,255,0.1);">
+          <span class="font-orbitron font-bold" style="color:#fff;">Total</span>
+          <span class="font-orbitron font-black text-xl neon-glow" style="color:var(--accent);">$${total}</span>
+        </div>
+      </div>
+      <button type="submit" class="btn-neon font-orbitron font-bold text-sm tracking-wider w-full py-4 rounded-xl flex items-center justify-center gap-2" style="color:#060611;">
+        <i data-lucide="zap" style="width:18px;height:18px;"></i> PLACE ORDER (DEMO)
+      </button>
+    </form>`;
+  lucide.createIcons();
+}
+
+function handleCheckout(e) {
+  e.preventDefault();
+  cart = [];
+  updateCartBadge();
+  const el = document.getElementById('checkout-content');
+  el.innerHTML = `
+    <div class="glass-card rounded-2xl p-12 text-center animate-fade-up">
+      <div class="w-20 h-20 rounded-full mx-auto flex items-center justify-center mb-6" style="background:linear-gradient(135deg, var(--accent), var(--accent2));">
+        <i data-lucide="check" style="width:40px;height:40px;color:#060611;"></i>
+      </div>
+      <h3 class="font-orbitron font-black text-2xl neon-glow" style="color:var(--accent);">ORDER PLACED!</h3>
+      <p class="mt-3 text-sm" style="color:rgba(224,232,255,0.5);">This was a demo checkout. No real transaction occurred.</p>
+      <button onclick="navigate('home')" class="btn-neon font-orbitron font-bold text-sm px-8 py-3 rounded-xl mt-8" style="color:#060611;">BACK TO HOME</button>
+    </div>`;
+  lucide.createIcons();
+}
+
+// ============ CART LOGIC ============
+function addToCart(id) {
+  const p = products.find(x => x.id === id);
+  if (!p) return;
+  const existing = cart.find(c => c.product.id === id);
+  if (existing) existing.qty++;
+  else cart.push({ product: p, qty: 1 });
+  updateCartBadge();
+  showToast(`${p.name} added to cart!`);
+}
+
+function updateQty(idx, delta) {
+  cart[idx].qty += delta;
+  if (cart[idx].qty <= 0) cart.splice(idx, 1);
+  updateCartBadge();
+  renderCart();
+}
+
+function removeFromCart(idx) {
+  cart.splice(idx, 1);
+  updateCartBadge();
+  renderCart();
+}
+
+function updateCartBadge() {
+  const count = cart.reduce((s, c) => s + c.qty, 0);
+  const badge = document.getElementById('cart-badge');
+  if (count > 0) {
+    badge.style.display = 'flex';
+    badge.textContent = count;
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// ============ THREE.JS HERO ============
+function initThreeJS() {
+  const canvas = document.getElementById('three-canvas');
+  if (!canvas) return;
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(60, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
+  camera.position.z = 5;
+
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+  renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+  // Create floating geometry
+  const group = new THREE.Group();
+  scene.add(group);
+
+  const geoMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff, wireframe: true, transparent: true, opacity: 0.35 });
+  const geoMat2 = new THREE.MeshBasicMaterial({ color: 0x8b5cf6, wireframe: true, transparent: true, opacity: 0.3 });
+
+  const torus = new THREE.Mesh(new THREE.TorusGeometry(1.8, 0.15, 16, 80), geoMat);
+  torus.rotation.x = 0.8;
+  group.add(torus);
+
+  const ico = new THREE.Mesh(new THREE.IcosahedronGeometry(1.0, 1), geoMat2);
+  group.add(ico);
+
+  const oct = new THREE.Mesh(new THREE.OctahedronGeometry(0.5, 0), geoMat);
+  oct.position.set(2.5, 1.2, -1);
+  group.add(oct);
+
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(0.6, 0.05, 8, 40), geoMat2);
+  ring.position.set(-2.8, -0.8, -0.5);
+  ring.rotation.y = 1;
+  group.add(ring);
+
+  // Particle field
+  const particleCount = 200;
+  const positions = new Float32Array(particleCount * 3);
+  for (let i = 0; i < particleCount * 3; i++) {
+    positions[i] = (Math.random() - 0.5) * 15;
+  }
+  const particleGeo = new THREE.BufferGeometry();
+  particleGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  const particleMat = new THREE.PointsMaterial({ color: 0x00f0ff, size: 0.03, transparent: true, opacity: 0.5 });
+  const particles = new THREE.Points(particleGeo, particleMat);
+  scene.add(particles);
+
+  let mouseX = 0, mouseY = 0;
+  document.addEventListener('mousemove', (e) => {
+    mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+    mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+  });
+
+  function animate() {
+    requestAnimationFrame(animate);
+    const t = Date.now() * 0.001;
+    torus.rotation.y = t * 0.3;
+    torus.rotation.z = t * 0.15;
+    ico.rotation.x = t * 0.4;
+    ico.rotation.y = t * 0.25;
+    oct.rotation.x = t * 0.5;
+    oct.rotation.z = t * 0.3;
+    ring.rotation.x = t * 0.35;
+    ring.rotation.z = t * 0.2;
+    group.rotation.y += (mouseX * 0.3 - group.rotation.y) * 0.02;
+    group.rotation.x += (-mouseY * 0.2 - group.rotation.x) * 0.02;
+    particles.rotation.y = t * 0.02;
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  const ro = new ResizeObserver(() => {
+    camera.aspect = canvas.clientWidth / canvas.clientHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+  });
+  ro.observe(canvas.parentElement);
+}
+
+// ============ ELEMENT SDK ============
+const defaultConfig = {
+  store_name: 'UPCMING',
+  hero_heading: 'URBAN NEON',
+  hero_subtext: 'Limited edition designer tshirts. Quantum aesthetics. Streetwear redefined.',
+  background_color: '#060611',
+  surface_color: '#0d0d2b',
+  text_color: '#e0e8ff',
+  accent_color: '#00f0ff',
+  accent2_color: '#8b5cf6',
+  font_family: 'Orbitron',
+  font_size: 16,
+};
+
+applyConfig(defaultConfig);
+
+function applyConfig(config) {
+  const c = { ...defaultConfig, ...config };
+
+  // Colors
+  document.documentElement.style.setProperty('--bg', c.background_color);
+  document.documentElement.style.setProperty('--surface', c.surface_color);
+  document.documentElement.style.setProperty('--text', c.text_color);
+  document.documentElement.style.setProperty('--accent', c.accent_color);
+  document.documentElement.style.setProperty('--accent2', c.accent2_color);
+  document.documentElement.style.setProperty('--accent-dim', c.accent_color + '40');
+  document.body.style.background = c.background_color;
+  document.body.style.color = c.text_color;
+
+  // Text content
+  const navName = document.getElementById('nav-store-name');
+  const footerName = document.getElementById('footer-store-name');
+  const heroH = document.getElementById('hero-heading');
+  const heroS = document.getElementById('hero-subtext');
+  if (navName) navName.textContent = c.store_name;
+  if (footerName) footerName.textContent = c.store_name;
+  if (heroH) heroH.innerHTML = c.hero_heading.replace(/\n/g, '<br>');
+  if (heroS) heroS.textContent = c.hero_subtext;
+
+  // Font
+  const fontStack = `${c.font_family}, Orbitron, sans-serif`;
+  document.querySelectorAll('.font-orbitron').forEach(el => {
+    el.style.fontFamily = fontStack;
+  });
+
+  // Font size
+  const base = c.font_size;
+  document.body.style.fontSize = base + 'px';
+}
+
+window.elementSdk.init({
+  defaultConfig,
+  onConfigChange: async (config) => {
+    applyConfig(config);
+  },
+  mapToCapabilities: (config) => ({
+    recolorables: [
+      { get: () => config.background_color || defaultConfig.background_color, set: (v) => { config.background_color = v; window.elementSdk.setConfig({ background_color: v }); } },
+      { get: () => config.surface_color || defaultConfig.surface_color, set: (v) => { config.surface_color = v; window.elementSdk.setConfig({ surface_color: v }); } },
+      { get: () => config.text_color || defaultConfig.text_color, set: (v) => { config.text_color = v; window.elementSdk.setConfig({ text_color: v }); } },
+      { get: () => config.accent_color || defaultConfig.accent_color, set: (v) => { config.accent_color = v; window.elementSdk.setConfig({ accent_color: v }); } },
+      { get: () => config.accent2_color || defaultConfig.accent2_color, set: (v) => { config.accent2_color = v; window.elementSdk.setConfig({ accent2_color: v }); } },
+    ],
+    borderables: [],
+    fontEditable: {
+      get: () => config.font_family || defaultConfig.font_family,
+      set: (v) => { config.font_family = v; window.elementSdk.setConfig({ font_family: v }); }
+    },
+    fontSizeable: {
+      get: () => config.font_size || defaultConfig.font_size,
+      set: (v) => { config.font_size = v; window.elementSdk.setConfig({ font_size: v }); }
+    },
+  }),
+  mapToEditPanelValues: (config) => new Map([
+    ['store_name', config.store_name || defaultConfig.store_name],
+    ['hero_heading', config.hero_heading || defaultConfig.hero_heading],
+    ['hero_subtext', config.hero_subtext || defaultConfig.hero_subtext],
+  ])
+});
+
+// ============ INIT ============
+document.addEventListener('DOMContentLoaded', () => {
+  updateAuthUI();
+  initThreeJS();
+  navigate('home');
+  lucide.createIcons();
+});
+</script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9dcc0d6780b3285b',t:'MTc3MzU4MzMxMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
